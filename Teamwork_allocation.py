@@ -18,7 +18,7 @@ from decimal import Decimal, ROUND_DOWN               # To calculate percentages
 import pyexcel as p                                   # To copy xls to xlsx
 from pathlib import Path                              # To check if file exists
 ################################## CONSTANTS ###################################
-FILE_OUT='Allocation Report.xlsX'
+FILE_OUT='Allocation Report.xlsx'
 NEW_SHEET='Allocation %'
 NEW_FTE='Project FTE'
 CPROJECT=0                                 # Excel column containing the project
@@ -35,6 +35,12 @@ def open_excel(excel_name):
     # Opens the excel in xls format if exists, converts it to xlsx  
     # Check by column header which contain project, consultant and hours
     print('Opening and converting Excel file...')
+    global ROWS
+    global COLUMNS
+    global CPROJECT
+    global CWHO
+    global CHOURS
+    global CDATE
     # If file exists, opens the excel and converts it to xlsx
     if Path(excel_name+".xls").is_file():   
         exists=True
@@ -70,6 +76,8 @@ def open_excel(excel_name):
 def accumulate_hours():
     # Process the list with all the time entries and accumulates hours for later
     #   calculation
+    global Total_hours_cons_proj
+    global Total_hours_consultant
     for timesheet in TimeSheets:
         proj=timesheet[0]
         cons=timesheet[1]
@@ -83,11 +91,12 @@ def accumulate_hours():
         if cons and proj and (cons,proj) in Total_hours_cons_proj.keys(): 
             Total_hours_cons_proj[(cons,proj)] += hours   
         else:
-            Total_hours_cons_proj[(cons,proj)] = hours
-
-
+            Total_hours_cons_proj[(cons,proj)] = hours 
+    
 def generate_allocation():
     # Generates a new tab in the excel with the allocation results
+    global FTE_project
+
     cur_row=1
    
     if NEW_SHEET in wb.sheetnames: 
